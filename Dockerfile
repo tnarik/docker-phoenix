@@ -4,13 +4,15 @@ MAINTAINER tnarik <tnarik@lecafeautomatique.co.uk>
 
 ENV PHOENIX_VERSION 1.1.4
 
+RUN locale-gen en_US.UTF-8 && \
+  update-locale LANG=en_US.UTF-8
+
 # Elixir requires UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN locale-gen en_US.UTF-8 && \
-  apt-get update && \
+RUN apt-get update && \
   apt-get install -y sudo \
     curl \
     wget \
@@ -25,17 +27,18 @@ RUN locale-gen en_US.UTF-8 && \
     postgresql && \
   rm erlang-solutions_1.0_all.deb && \
 
-  mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new-$PHOENIX_VERSION.ez && \
-  mix local.hex --force && \
-  curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - && apt-get install -y nodejs && \
-
   # Configure postgresql for use by Phoenix
   /etc/init.d/postgresql start && \
-  sudo -u postgres psql -c "ALTER USER "postgres" WITH PASSWORD 'postgres';" && \
+  sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';" && \
   /etc/init.d/postgresql stop && \
 
   rm -rf /var/lib/apt/lists/*
 
+RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new-$PHOENIX_VERSION.ez && \
+  mix local.hex --force && \
+  curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - && apt-get install -y nodejs && \
+
+  rm -rf /var/lib/apt/lists/*
 
 # Runtime folder
 WORKDIR /code
