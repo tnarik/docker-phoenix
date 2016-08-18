@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  dev:
+    image: tnarik/phoenix
+    container_name: phoenix
+    build:
+      context: .
+    working_dir: /code
+    volumes:
+      - ./src:/code
+    ports:
+      - "4000:4000"
